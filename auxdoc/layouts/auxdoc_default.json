@@ -1,0 +1,12 @@
+{
+    "title" : "Test Report Version 0.1!",
+    "subtitle" : "This is a sample sub-title for \"testing purposes\" & rendering",
+    "authors" : ["Karl Schmidt <kfschmidt@gmail.com>", "Harrison Schmidt"],
+    "pages" : [
+	{"page_template" : "titlepage",
+	 "title" : "The actual display title",
+	 "subtitle" : "Here's some subtitle text with <b>markup</b>",
+	 "logo" : "tdir/BlueRock-Logo-Full-Color-Final-2.svg"}
+	]
+
+}

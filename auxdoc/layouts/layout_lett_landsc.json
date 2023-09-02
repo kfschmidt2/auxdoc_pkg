@@ -1,0 +1,123 @@
+{
+    "description" : "A standard landscape layout fit to letter size paper",
+    "layout_name" : "letter_landscape",
+    "page_width": 11,
+    "page_height": 8.5,
+    "units": "in",
+    "fonts" : {
+        "Vesper Libre" : "@import url(\"https://fonts.googleapis.com/css2?family=Carme&amp;family=Vesper+Libre&amp;display=swap\")",
+        "Roboto" : "@import url(\"https://fonts.googleapis.com/css2?family=Roboto&amp;display=swap\")"	
+    },
+    "cell_classes" :
+    {
+	"cell_title" : {
+	    "cell_type" : "celltype_text",
+	    "style" : "{ font-size: 40pt; font-family: \"Vesper Libre\", serif; font-style:italic; }"
+	},
+	"cell_subtitle" : {
+            "cell_type" : "celltype_text",
+            "style" : "{ font-size: 23pt; font-family: sans-serif;\n font-style: bold; }"
+	},	
+	"cell_body" : {
+            "cell_type" : "celltype_text",
+            "style" : "{ font-size: 15pt; font-family: sans-serif;\n font-style: bold; }"
+	},	     
+        "cell_header" : {
+	    "cell_type" : "celltype_text",
+            "style" : "{ font-size: 12pt; color:red; font-family: sans-serif; font-style: bold; }"
+    	},
+        "cell_image" : {
+	    "cell_type" : "celltype_image"
+    	}	
+    },
+    "page_templates": {
+	"titlepage" : {
+	    "cells": [
+		{
+		    "cell_name": "header",
+		    "cell_class": "cell_header",	    		    		    
+		    "cell_instance_id": -1,
+		    "x": 0.25,
+		    "y": 0.25,
+		    "width": 10.5,
+		    "height": 0.75,
+		    "content": []
+		},
+		{
+		    "cell_name": "title",
+		    "cell_instance_id": -1,
+		    "cell_class": "cell_title",  
+		    "x": 1,
+		    "y": 1,
+		    "width": 10,
+		    "height": 1,
+		    "content": []
+		},
+		{
+		    "cell_name": "subtitle",
+		    "cell_instance_id": -1,
+		    "cell_class": "cell_subtitle",  
+		    "x": 2,
+		    "y": 2,
+		    "width": 10,
+		    "height": 1,
+		    "content": []
+		},
+		{
+		    "cell_name": "logo",
+		    "cell_instance_id": -1,
+		    "cell_class": "cell_image",  
+		    "x": 2,
+		    "y": 5,
+		    "width": 2,
+		    "height": 1,
+		    "content": []
+		}	  		
+	    ]
+	},
+	"text3col" : {
+	    "cells": [
+		{
+		    "cell_name": "header",
+		    "cell_class": "cell_header",	    		    		    
+		    "cell_instance_id": -1,
+		    "x": 0.25,
+		    "y": 0.25,
+		    "width": 10.5,
+		    "height": 0.75,
+		    "content": []
+		},
+		{
+		    "cell_name": "title",
+		    "cell_instance_id": -1,
+		    "cell_class": "cell_title",  
+		    "x": 1,
+		    "y": 1,
+		    "width": 4,
+		    "height": 1,
+		    "content": []
+		},
+		{
+		    "cell_name": "subtitle",
+		    "cell_instance_id": -1,
+		    "cell_class": "cell_subtitle",  
+		    "x": 2,
+		    "y": 2,
+		    "width": 4,
+		    "height": 1,
+		    "content": []
+		},
+		{
+		    "cell_name": "col1",
+		    "cell_instance_id": -1,
+		    "cell_class": "cell_body",  
+		    "x": 1.5,
+		    "y": 3,
+		    "width": 3,
+		    "height": 4,
+		    "content": []
+		}	  		
+	    ]
+	}	
+    }
+}
