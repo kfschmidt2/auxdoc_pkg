@@ -13,8 +13,6 @@ import logging
 import base64
 from auxdoc.literals import *
 
-logging.basicConfig(level=logging.DEBUG, encoding='utf-8')
-
 class XRef:
 
     def __init__(self, source, target):
@@ -36,8 +34,6 @@ class Cell:
         self.layout_props = layout_props
         self.cell_type = []
         self.content = ""
-        
-        logging.debug("layout_props is: "+str(layout_props))
         
         # get the basic required params
         try:
@@ -72,6 +68,7 @@ class Page:
     def __init__(self, page_template_name, pg_json, cell_classes, fonts, pagenumber = -1):
         self.page_template_name = page_template_name
         self.pg_json = pg_json
+        self.page_contents = {}
         self.page_no = pagenumber
         self.width = []
         self.height = []
@@ -79,7 +76,6 @@ class Page:
         self.cells = {}
         self.cell_classes = cell_classes
         self.fonts = fonts
-        print("cell_classes = "+str(self.cell_classes))
 
         # parse the cells 
         cells = pg_json['cells']
@@ -94,7 +90,7 @@ class Page:
         
     def __str__(self):
         ret = "Page["
-        ret += "layout: "+layout
+        ret += "template: "+self.page_template_name
         ret += ", page_no: "+str(self.page_no)
         ret += "]"
         return ret
@@ -111,6 +107,14 @@ class Page:
             rstr += str(c)
         return rstr + "]"
 
+    def getCell(self, cell_name):
+        retcell = None;
+        try:
+            retcell = self.cells[cell_name]
+        except:
+            logger.info("Cell "+cell_name+" not found for page: "+str(self))
+        return retcell
+    
     def mergeContent(self, doc_page):
         logging.debug("mergeContent()")
         self.doc_json = doc_page
@@ -156,20 +160,26 @@ class Layout:
         # check that all cell classes are defined
         logging.debug("... layout check was successful")
 
+    def pageHasCell(self, template_name, cell_name):
+        print("page_templates is:"+str(self.page_templates))
+        retval = False
+        try:
+            template = self.page_templates[template_name]
+            cell = template.getCell(cell_name)        
+            if cell == None:
+                raise Exception ("Template: "+template_name+" does not have cell: "+cell_name)
+            retval = True
+        except:
+            raise Exception ("Page template: "+template_name+" not found.")
+        return retval
+    
     @staticmethod
-    def getLayout(layout_ref = LAYOUT_LETTER_LANDSCAPE):
-        retlayout = []
-        lo_json = []
+    def loadLayout(layout_file):
         layout_file = layout_ref
-        if layout_ref == LAYOUT_LETTER_LANDSCAPE:
-            lfile = pkg_resources.resource_filename("auxdoc", LAYOUT_DIR + "/" + LAYOUT_LETTER_LANDSCAPE)            
-            lo_json = json.loads(open(lfile, 'r').read())
-        elif os.path.isfile(layout_ref):
-            lo_json = json.loads(open(lfile, 'r').read())
-        else:
-            raise Exception("Layout or layout file not recognized: "+layout_ref)
+        lo_json = json.loads(open(lfile, 'r').read())
         retlayout = Layout(lo_json)
-        return retlayout
+        return retlayout        
+
 
             
     def getStyleForCellClass(self, cell_class):
@@ -180,28 +190,22 @@ class Layout:
         return ret
     
     def getBlankPage(self, page_template_name):
-        ret = None
-        for p in self.page_templates.keys():
-            if page_template_name == p:
-                ret = copy.deepcopy(self.page_templates[p])
+        ret = copy.deepcopy(self.page_templates[page_template_name])
         return ret
 
         
 class AUXDoc:
     '''AUXDoc is an object containing a renderable merge of content + layout '''
     
-    def __init__(self, doc_file = DEFAULT_AUXDOC):
-        dfile = []        
-        if os.path.isfile(doc_file):
-            dfile = doc_file             
-        elif doc_file == DEFAULT_AUXDOC:
-            dfile = pkg_resources.resource_filename("auxdoc", LAYOUT_DIR + "/" + DEFAULT_AUXDOC)            
-        else:
-            raise Exception("Auxdoc file not found: "+doc_file)
-
-        self.layout = Layout.getLayout()        
+    def __init__(self):
+        self.setLayout()
+        self.pages = [] # the merged contents and layout
         self.units = UNIT_INCHES
-                
+        self.title = []
+        self.subtitle = []
+        self.authors = []
+
+        
     def __str__(self):
         rstr = "AUXDOC[title:"+str(dir(self))+"]"
         return rstr
@@ -209,27 +213,100 @@ class AUXDoc:
     def __repr__(self):
         return self.__str__()
 
-    def addPage(page_template, page_contents):
-        logging.debug("addPage("+page_template+"): "+page_contents)
-        pg = layout.getBlankPage(page_template)
-        pg.mergeContent(docp)
+    def setLayout(self, layout_file = LAYOUT_LETTER_LANDSCAPE):
+        logging.info("AUXDoc loading the default layout: "+layout_file)
+        lo_json = []
+        if layout_file == LAYOUT_LETTER_LANDSCAPE:
+            lfile = pkg_resources.resource_filename("auxdoc", LAYOUT_DIR + "/" + LAYOUT_LETTER_LANDSCAPE)            
+            lo_json = json.loads(open(lfile, 'r').read())            
+        elif os.path.isfile(layout_ref):
+            lo_json = json.loads(open(lfile, 'r').read())
+        else:
+            raise Exception("Layout or layout file not recognized: "+layout_ref)
+        self.layout = Layout(lo_json)
+
+    def loadContent(self, doc_file = SAMPLE_AUXDOC):
+        dfile = []        
+        if os.path.isfile(doc_file):
+            dfile = doc_file
+            self.docdir = os.path.dirname(doc_file)            
+        elif doc_file == SAMPLE_AUXDOC:
+            dfile = pkg_resources.resource_filename("auxdoc", LAYOUT_DIR + "/" + SAMPLE_AUXDOC)
+            self.docdir = os.getcwd()         
+        else:
+            raise Exception("Auxdoc file not found: "+doc_file)
+        self.doc_file = dfile
+        self.doc_contents = json.loads(open(dfile, 'r').read())
+        self.title = self.doc_json['title']
+        self.subtitle = self.doc_json['subtitle']
+        self.authors = self.doc_json['authors']
+
+    def setTitle(self, title):
+        logging.debug("setTitle("+title+")")
+        self.title = title
+        if len(self.pages) > 0:
+            self.pages[0].page_contents['title'] = title
+            
+    def setSubTitle(self, subtitle):
+        logging.debug("setSubTitle("+subtitle+")")        
+        self.subtitle = subtitle
+        if len(self.pages) > 0:
+            self.pages[0].page_contents['subtitle'] = subtitle
+        
+
+    def setAuthors(self, authors):
+        logging.debug("setAuthors("+authors+")")        
+        self.authors = authors
+        if len(self.pages) > 0:
+            self.pages[0].page_contents['authors'] = authors
+        
+
+    def addPage(self, page_template):
+        logging.debug("addPage("+page_template+")")
+        pg = self.layout.getBlankPage(page_template)
         pg.page_no = len(self.pages) +1
-        self.pages.append(pg)        
+        pg.page_contents['page_template_name'] = page_template
+        self.pages.append(pg)
+        print("pg is: "+str(pg))        
         return pg
-        
-    def loadAUXDoc(self, doc_file):
-        '''Create a new, renderable document merging the content in doc_file with the layout '''
-        logging.info("Loading AUXDoc: "+str(doc_file))            
-        self.docdir = os.path.dirname(doc_json_file)
-        self.doc_json = json.loads(open(lfile, 'r').read())
-        self.title = doc['title']
-        self.subtitle = doc['subtitle']
-        self.authors = doc['authors']
-        
+
+    def setPageContent(self, page_no, cell_name, cell_content):
+        if page_no > len(self.pages):
+            raise Exception("Page number: " + str(page_no) + " vs len(pages): "+str(len(self.pages)))
+
+        self.layout.pageHasCell(self.pages[page_no-1].page_template_name, cell_name)  # check the cell and template            
+        self.pages[page_no-1].page_contents[cell_name] = cell_content
+    
+    def doLayout(self):
+        '''Merges document content with layout to create a renderable composite '''
+        if self.layout == None:
+            logging.info("No layout is set... loading default layout")
+            self.layout = Layout()
+            
+        logging.info("layoutAUXDoc(): layout="+self.layout.layout_name)                    
+
+        # TODO add check of xrefs, content and cells, cell default values, etc.
+
         # create pages and merge content
         for docp in self.doc_json['pages']:
             self.addPage(docp['page_template'], docp)
             
         logging.debug("... finished loadAUXDoc successfully.")        
-            
+
+    def getContentJSON(self):
+        retdict = {}
+        retdict['title'] = self.title
+        retdict['subtitle'] = self.subtitle
+        retdict['authors'] = self.authors
+        retdict['pages'] = []
+        for p in self.pages:
+            retdict['pages'].append(p.page_contents)
+        retstr = json.dumps(retdict, indent = 2)
+        return retstr
+
+    def getCannonicalJSON(self):
+        retstr = []
+        this_dict = vars(self)
+        retstr = json.dumps(this_dict, default=lambda o: o.__dict__, indent=2)
+        return retstr
     

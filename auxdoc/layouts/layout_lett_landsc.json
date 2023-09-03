@@ -26,6 +26,10 @@
 	    "cell_type" : "celltype_text",
             "style" : "{ font-size: 12pt; color:red; font-family: sans-serif; font-style: bold; }"
     	},
+	"cell_fig_title" : {
+            "cell_type" : "celltype_text",
+            "style" : "{ font-size: 16pt; font-family: sans-serif;\n font-style: bold; }"
+	},	
         "cell_image" : {
 	    "cell_type" : "celltype_image"
     	}	
@@ -75,6 +79,71 @@
 		}	  		
 	    ]
 	},
+	"oneup" : {
+	    "cells": [
+		{
+		    "cell_name": "header",
+		    "cell_class": "cell_header",	    		    		    
+		    "cell_instance_id": -1,
+		    "x": 0.25,
+		    "y": 0.25,
+		    "width": 10.5,
+		    "height": 0.75,
+		    "content": []
+		},
+		{
+		    "cell_name": "title",
+		    "cell_instance_id": -1,
+		    "cell_class": "cell_title",  
+		    "x": 1,
+		    "y": 1,
+		    "width": 4,
+		    "height": 1,
+		    "content": []
+		},
+		{
+		    "cell_name": "subtitle",
+		    "cell_instance_id": -1,
+		    "cell_class": "cell_subtitle",  
+		    "x": 2,
+		    "y": 2,
+		    "width": 4,
+		    "height": 1,
+		    "content": []
+		},
+		{
+		    "cell_name": "figure_legend_title",
+		    "cell_instance_id": -1,
+		    "cell_class": "cell_fig_title",  
+		    "x": 1.5,
+		    "y": 3,
+		    "width": 3,
+		    "height": 0.75,
+		    "content": []
+		},
+		{
+		    "cell_name": "figure_legend",
+		    "cell_instance_id": -1,
+		    "cell_class": "cell_body",  
+		    "x": 1.5,
+		    "y": 4,
+		    "width": 3,
+		    "height": 4,
+		    "content": []
+		},
+		{
+		    "cell_name": "fig1",
+		    "cell_instance_id": -1,
+		    "cell_class": "cell_image",  
+		    "x": 5,
+		    "y": 2,
+		    "width": 5,
+		    "height": 5,
+		    "content": []
+		}	  			  	
+		
+	    ]
+	},
 	"text3col" : {
 	    "cells": [
 		{
@@ -118,6 +187,6 @@
 		    "content": []
 		}	  		
 	    ]
-	}	
+	}		
     }
 }
