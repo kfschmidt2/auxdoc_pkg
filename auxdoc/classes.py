@@ -213,11 +213,11 @@ class AUXDoc:
     def __repr__(self):
         return self.__str__()
 
-    def setLayout(self, layout_file = LAYOUT_LETTER_LANDSCAPE):
+    def setLayout(self, layout_file = LAYOUT_SLIDE):
         logging.info("AUXDoc loading the default layout: "+layout_file)
         lo_json = []
-        if layout_file == LAYOUT_LETTER_LANDSCAPE:
-            lfile = pkg_resources.resource_filename("auxdoc", LAYOUT_DIR + "/" + LAYOUT_LETTER_LANDSCAPE)            
+        if layout_file == LAYOUT_SLIDE:
+            lfile = pkg_resources.resource_filename("auxdoc", LAYOUT_DIR + "/" + LAYOUT_SLIDE)            
             lo_json = json.loads(open(lfile, 'r').read())            
         elif os.path.isfile(layout_ref):
             lo_json = json.loads(open(lfile, 'r').read())

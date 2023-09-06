@@ -6,7 +6,7 @@ setup(name='auxdoc',
       author='Karl Schmidt',
       author_email='kfschmidt@gmail.com',
       url='https://github.com/kfschmidt2/auxdoc',
-      packages=find_packages(where="auxdoc"),
+      packages=['auxdoc', 'auxdoc.demo', 'auxdoc.layouts'],
       packages_dir={"":"auxdoc"},
       include_package_data=True,
       )

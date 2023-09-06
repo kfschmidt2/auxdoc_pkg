@@ -13,16 +13,6 @@ import logging
 import base64
 from auxdoc.literals import *
 
-def convertToPts(val, units):
-    '''Convert unit measures to pt'''
-    pts = -1
-    if units == UNIT_INCHES:
-        pts = val * PT_PER_IN
-    elif units == UNIT_CM:
-        pts = val * PT_PER_IN / CM_PER_IN
-    return pts
-
-
 
         
 def renderAUXDoc(doc_json_file, layout_json_file = LAYOUT_LETTER_LANDSCAPE):

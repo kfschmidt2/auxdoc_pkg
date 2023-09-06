@@ -13,7 +13,6 @@ from .classes import Layout
 from .classes import Page
 from .classes import Cell
 from .classes import XRef
-from .funcs import convertToPts
 from .demo import runDemo
 from .demo import copyResourceFile
 from .demo import copyResourceFiles

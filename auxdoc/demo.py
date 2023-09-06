@@ -3,8 +3,9 @@ import pkgutil
 import logging
 from auxdoc.classes import AUXDoc, Page, Layout, Cell
 from auxdoc.loremipsum import *
+from auxdoc.html_writer import renderDoc as renderHTML
 
-DEFAULT_OUTDIR = "./auxdoc_example"
+DEFAULT_OUTDIR = "./auxdoc_testdoc"
 CONTENTSDIR = "contents"
 IMGFILES = ["IMG_0554.jpg", "IMG_0693.jpg", "IMG_1665.jpg", "dog_logo.png"]
 MOVFILES = "IMG_6379.MOV"
@@ -38,6 +39,7 @@ def runDemo(to_dir = DEFAULT_OUTDIR):
 
     pg = adoc.addPage("oneup")        
     adoc.setPageContent(2, "title", "Big and Small")
+    adoc.setPageContent(2, "header", "[Page Header]")
     adoc.setPageContent(2, "subtitle", "You have to love them all")
     adoc.setPageContent(2, "fig1", DEFAULT_OUTDIR + "/" + CONTENTSDIR +"/" +IMGFILES[0] )
     adoc.setPageContent(2, "figure_legend_title", "An image of two dogs")
@@ -51,3 +53,6 @@ def runDemo(to_dir = DEFAULT_OUTDIR):
 
     jstr = adoc.getContentJSON()
     logging.info("Content JSON of the doc is: "+jstr)
+
+    # write the HTML file
+    renderHTML(adoc, DEFAULT_OUTDIR, "auxdoc_report", show_layout = True)

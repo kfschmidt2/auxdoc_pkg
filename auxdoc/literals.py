@@ -4,6 +4,7 @@ Literals definition for package
 
 LAYOUT_DIR = "layouts"
 LAYOUT_LETTER_LANDSCAPE = "layout_lett_landsc.json" # AR 11:8.5 = 1.29
+LAYOUT_SLIDE = "layout_slide.json" # AR 11:8.5 = 1.29
 SAMPLE_AUXDOC = "auxdoc_default.json"
 
 UNIT_INCHES = "in"

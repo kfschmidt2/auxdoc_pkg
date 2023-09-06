@@ -1,8 +1,8 @@
 {
-    "description" : "A standard landscape layout fit to letter size paper",
-    "layout_name" : "letter_landscape",
-    "page_width": 11,
-    "page_height": 8.5,
+    "description" : "A standard landscape layout fit to screen slide aspect ratio of 1280x1920",
+    "layout_name" : "slide_1920_1200",
+    "page_width": 16,
+    "page_height": 9,
     "units": "in",
     "fonts" : {
         "Vesper Libre" : "@import url(\"https://fonts.googleapis.com/css2?family=Carme&amp;family=Vesper+Libre&amp;display=swap\")",
