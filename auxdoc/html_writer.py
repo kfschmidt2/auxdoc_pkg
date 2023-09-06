@@ -17,7 +17,7 @@ def convertToPts(val, units):
 
 
 def renderDoc(udoc, outdir, fileprefix, show_layout = False):
-    logging.info("rendering to HTML: "+str(udoc))
+    logging.info("rendering to HTML: "+str(udoc) + " to directory: "+outdir)
     page_outdir = "/page_svg_files"
 
     # set the layout flag if indicated
@@ -174,7 +174,7 @@ def getImageCellAsSVG(cell_coords, content, class_name):
     if not os.path.exists(src):
         raise Exception("The image file: "+src+" was not found")
     
-    if ext.lower() == ".svg":
+    if ext.lower() == ".svg_bogs":
         svg = open(src).read()
     else:
         print("about to encode src file: "+src)
