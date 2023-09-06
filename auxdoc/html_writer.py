@@ -18,7 +18,7 @@ def convertToPts(val, units):
 
 def renderDoc(udoc, outdir, fileprefix, show_layout = False):
     logging.info("rendering to HTML: "+str(udoc) + " to directory: "+outdir)
-    page_outdir = "/page_svg_files"
+    page_subdir = "page_svg_files"
 
     # set the layout flag if indicated
     if show_layout:
@@ -26,13 +26,14 @@ def renderDoc(udoc, outdir, fileprefix, show_layout = False):
         SHOW_LAYOUT = True
     
     # check that the directory exists
-    if not os.path.exists(outdir + page_outdir):
+    page_outdir = outdir + '/' + page_subdir
+    if not os.path.exists(page_outdir):
         logging.debug("Creating directory: "+page_outdir)
-        os.makedirs(outdir + page_outdir)        
+        os.makedirs(page_outdir)        
     
     # render each page
     for p in udoc.pages:
-        ofile_svg = outdir + page_outdir + "/" + fileprefix + "_p" + str(p.page_no) + ".svg"
+        ofile_svg = page_outdir + "/" + fileprefix + "_p" + str(p.page_no) + ".svg"
         logging.debug("rendering page: "+str(p.page_no) + " to file: "+ofile_svg)
         svgstr = getPageAsSVG(p)
         fid = open(ofile_svg, 'w')
@@ -111,13 +112,10 @@ def renderDoc(udoc, outdir, fileprefix, show_layout = False):
 
     '''
     
-    body = \
-'''
-    <div id="svgdiv" tabindex=0>
-    <object id="svgobj" width="100%" data="page_svg_files/auxdoc_report_p1.svg" type="image/svg+xml" tabindex=1>
-    </object>
-    </div>
-'''    
+    body = '<div id="svgdiv" tabindex=0>\n' + \
+        '<object id="svgobj" data="' + page_subdir + '/' + fileprefix + '_p1.svg" type="image/svg+xml" tabindex=1>\n' + \
+        '</object>\n' + \
+        '</div>'
     
     html_str = open_html + open_head
     html_str += close_head
