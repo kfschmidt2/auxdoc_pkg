@@ -247,6 +247,7 @@ class AUXDoc:
         if len(self.pages) > 0:
             self.pages[0].page_contents['title'] = title
             
+            
     def setSubTitle(self, subtitle):
         logging.debug("setSubTitle("+subtitle+")")        
         self.subtitle = subtitle
@@ -260,7 +261,6 @@ class AUXDoc:
         if len(self.pages) > 0:
             self.pages[0].page_contents['authors'] = authors
         
-
     def addPage(self, page_template):
         logging.debug("addPage("+page_template+")")
         pg = self.layout.getBlankPage(page_template)

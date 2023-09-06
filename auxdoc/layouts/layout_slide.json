@@ -140,7 +140,17 @@
 		    "width": 5,
 		    "height": 5,
 		    "content": []
-		}	  			  	
+		},
+	  	{
+		    "cell_name": "logo",
+		    "cell_instance_id": -1,
+		    "cell_class": "cell_image",  
+		    "x": 1,
+		    "y": 8,
+		    "width": 1,
+		    "height": 1,
+		    "content": []
+		}	  		
 		
 	    ]
 	},
@@ -185,7 +195,17 @@
 		    "width": 3,
 		    "height": 4,
 		    "content": []
-		}	  		
+		},
+	  	{
+		    "cell_name": "logo",
+		    "cell_instance_id": -1,
+		    "cell_class": "cell_image",  
+		    "x": 1,
+		    "y": 8,
+		    "width": 1,
+		    "height": 1,
+		    "content": []
+		}	  			  	
 	    ]
 	}		
     }
