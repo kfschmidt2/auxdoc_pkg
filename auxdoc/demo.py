@@ -7,7 +7,7 @@ from auxdoc.html_writer import renderDoc as renderHTML
 
 DEFAULT_OUTDIR = "./auxdoc_testdoc"
 CONTENTSDIR = "contents"
-IMGFILES = ["IMG_0554.jpg", "IMG_0693.jpg", "IMG_1665.jpg", "dog_logo.png"]
+IMGFILES = ["IMG_0554.jpg", "IMG_0693.jpg", "IMG_1665.jpg", "dog_logo.png", "blood-test.svg"]
 MOVFILES = "IMG_6379.MOV"
     
 def copyResourceFile(resource_file_name, to_dir):
@@ -44,6 +44,7 @@ def runDemo(to_dir = DEFAULT_OUTDIR):
     adoc.setPageContent(2, "fig1", DEFAULT_OUTDIR + "/" + CONTENTSDIR +"/" +IMGFILES[0] )
     adoc.setPageContent(2, "figure_legend_title", "An image of two dogs")
     adoc.setPageContent(2, "figure_legend", "This is the legend body text. It should be in the same font and format as the body text")
+    adoc.setPageContent(2, "logo", DEFAULT_OUTDIR + "/" + CONTENTSDIR +"/" +IMGFILES[4] )
 
     pg = adoc.addPage("text3col")
     adoc.setPageContent(3, "header", "Page header")

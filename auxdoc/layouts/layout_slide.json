@@ -32,19 +32,32 @@
 	},	
         "cell_image" : {
 	    "cell_type" : "celltype_image"
+    	},
+	"cell_animation" : {
+	    "cell_type" : "celltype_animation"
     	}	
     },
     "page_templates": {
 	"titlepage" : {
 	    "cells": [
 		{
+		    "cell_name": "logo",
+		    "cell_instance_id": -1,
+		    "cell_class": "cell_image",  
+		    "x": 2,
+		    "y": 5,
+		    "width": 2,
+		    "height": 1,
+		    "content": []
+		},	  		
+		{
 		    "cell_name": "header",
 		    "cell_class": "cell_header",	    		    		    
 		    "cell_instance_id": -1,
 		    "x": 0.25,
-		    "y": 0.25,
+		    "y": 0.0,
 		    "width": 10.5,
-		    "height": 0.75,
+		    "height": 0.5,
 		    "content": []
 		},
 		{
@@ -66,29 +79,29 @@
 		    "width": 10,
 		    "height": 1,
 		    "content": []
-		},
-		{
-		    "cell_name": "logo",
-		    "cell_instance_id": -1,
-		    "cell_class": "cell_image",  
-		    "x": 2,
-		    "y": 5,
-		    "width": 2,
-		    "height": 1,
-		    "content": []
-		}	  		
+		}
 	    ]
 	},
 	"oneup" : {
 	    "cells": [
+	  	{
+		    "cell_name": "logo",
+		    "cell_instance_id": -1,
+		    "cell_class": "cell_image",  
+		    "x": 1,
+		    "y": 8,
+		    "width": 2,
+		    "height": 1,
+		    "content": []
+		},		
 		{
 		    "cell_name": "header",
 		    "cell_class": "cell_header",	    		    		    
 		    "cell_instance_id": -1,
 		    "x": 0.25,
-		    "y": 0.25,
+		    "y": 0.0,
 		    "width": 10.5,
-		    "height": 0.75,
+		    "height": 0.5,
 		    "content": []
 		},
 		{
@@ -115,7 +128,7 @@
 		    "cell_name": "figure_legend_title",
 		    "cell_instance_id": -1,
 		    "cell_class": "cell_fig_title",  
-		    "x": 1.5,
+		    "x": 0.75,
 		    "y": 2.75,
 		    "width": 3,
 		    "height": 0.75,
@@ -125,8 +138,8 @@
 		    "cell_name": "figure_legend",
 		    "cell_instance_id": -1,
 		    "cell_class": "cell_body",  
-		    "x": 1.5,
-		    "y": 3.25,
+		    "x": 0.75,
+		    "y": 3.5,
 		    "width": 3,
 		    "height": 4,
 		    "content": []
@@ -135,12 +148,16 @@
 		    "cell_name": "fig1",
 		    "cell_instance_id": -1,
 		    "cell_class": "cell_image",  
-		    "x": 5,
-		    "y": 2,
-		    "width": 5,
-		    "height": 5,
+		    "x": 3.5,
+		    "y": 1.75,
+		    "width": 6,
+		    "height": 6,
 		    "content": []
-		},
+		}
+	    ]
+	},
+	"text3col" : {
+	    "cells": [
 	  	{
 		    "cell_name": "logo",
 		    "cell_instance_id": -1,
@@ -150,12 +167,7 @@
 		    "width": 1,
 		    "height": 1,
 		    "content": []
-		}	  		
-		
-	    ]
-	},
-	"text3col" : {
-	    "cells": [
+		},		
 		{
 		    "cell_name": "header",
 		    "cell_class": "cell_header",	    		    		    
@@ -195,17 +207,7 @@
 		    "width": 3,
 		    "height": 4,
 		    "content": []
-		},
-	  	{
-		    "cell_name": "logo",
-		    "cell_instance_id": -1,
-		    "cell_class": "cell_image",  
-		    "x": 1,
-		    "y": 8,
-		    "width": 1,
-		    "height": 1,
-		    "content": []
-		}	  			  	
+		}
 	    ]
 	}		
     }
