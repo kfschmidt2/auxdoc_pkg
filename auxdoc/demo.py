@@ -11,7 +11,7 @@ IMGFILES = ["IMG_0554.jpg", "IMG_0693.jpg", "IMG_1665.jpg", "dog_logo.png", "blo
 MOVFILES = "IMG_6379.MOV"
     
 def copyResourceFile(resource_file_name, to_dir):
-        data = pkgutil.get_data(__package__, "demo/"+resource_file_name)
+        data = pkgutil.get_data(__package__, "media/"+resource_file_name)
         ofile = open(to_dir + "/" + resource_file_name, 'wb')
         ofile.write(data)
         ofile.close()
