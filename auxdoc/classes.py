@@ -26,6 +26,7 @@ A Cell is an object containing layout information for rendering on the page as w
 content to be rendered
 '''
 class Cell:
+    CELLTYPE_ANIMATION = "celltype_animation"
     CELLTYPE_IMAGE = "celltype_image"
     CELLTYPE_TEXT = "celltype_text"
     CELLTYPE_RECT = "celltype_rect"
@@ -225,7 +226,8 @@ class AUXDoc:
             raise Exception("Layout or layout file not recognized: "+layout_ref)
         self.layout = Layout(lo_json)
 
-    def loadContent(self, doc_file = SAMPLE_AUXDOC):
+
+    def loadContent(self, doc_file):
         dfile = []        
         if os.path.isfile(doc_file):
             dfile = doc_file

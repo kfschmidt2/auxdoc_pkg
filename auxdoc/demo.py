@@ -8,7 +8,8 @@ from auxdoc.html_writer import renderDoc as renderHTML
 DEFAULT_OUTDIR = "./auxdoc_testdoc"
 CONTENTSDIR = "contents"
 IMGFILES = ["IMG_0554.jpg", "IMG_0693.jpg", "IMG_1665.jpg", "dog_logo.png", "blood-test.svg"]
-MOVFILES = "IMG_6379.MOV"
+MOVFILES = ["IMG_6379.MOV"]
+
     
 def copyResourceFile(resource_file_name, to_dir):
         data = pkgutil.get_data(__package__, "media/"+resource_file_name)
