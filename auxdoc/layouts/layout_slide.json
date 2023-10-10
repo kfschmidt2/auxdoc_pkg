@@ -12,15 +12,15 @@
     {
 	"cell_title" : {
 	    "cell_type" : "celltype_text",
-	    "style" : "{ font-size: 34pt; font-family: \"Vesper Libre\", serif; font-style:italic; }"
+	    "style" : "{ font-size: 28pt; font-family: \"Vesper Libre\", serif; font-style:italic; }"
 	},
 	"cell_subtitle" : {
             "cell_type" : "celltype_text",
-            "style" : "{ font-size: 20pt; font-family: sans-serif;\n font-style: bold; }"
+            "style" : "{ font-size: 16pt; font-family: sans-serif; font-style: bold; }"
 	},	
 	"cell_body" : {
             "cell_type" : "celltype_text",
-            "style" : "{ font-size: 10pt; font-family: serif;\n font-style: normal; }"
+            "style" : "{ font-size: 10pt; font-family: serif; font-style: normal; }"
 	},	     
         "cell_header" : {
 	    "cell_type" : "celltype_text",
@@ -28,14 +28,11 @@
     	},
 	"cell_fig_title" : {
             "cell_type" : "celltype_text",
-            "style" : "{ font-size: 16pt; font-family: sans-serif;\n font-style: bold; }"
+            "style" : "{ font-size: 12pt; font-family: sans-serif; font-style: bold; }"
 	},	
         "cell_image" : {
 	    "cell_type" : "celltype_image"
-    	},
-	"cell_animation" : {
-	    "cell_type" : "celltype_animation"
-    	}	
+    	}
     },
     "page_templates": {
 	"titlepage" : {
@@ -79,7 +76,17 @@
 		    "width": 10,
 		    "height": 1,
 		    "content": []
-		}
+		},
+		{
+		    "cell_name": "authors",
+		    "cell_instance_id": -1,
+		    "cell_class": "cell_subtitle",  
+		    "x": 2,
+		    "y": 3,
+		    "width": 10,
+		    "height": 1,
+		    "content": []
+		}		
 	    ]
 	},
 	"oneup" : {
@@ -92,7 +99,7 @@
 		    "y": 8,
 		    "width": 2,
 		    "height": 1,
-		    "content": []
+		    "content": []		    
 		},		
 		{
 		    "cell_name": "header",
@@ -101,17 +108,17 @@
 		    "x": 0.25,
 		    "y": 0.0,
 		    "width": 10.5,
-		    "height": 0.5,
+		    "height": 0.25,
 		    "content": []
 		},
 		{
 		    "cell_name": "title",
 		    "cell_instance_id": -1,
 		    "cell_class": "cell_title",  
-		    "x": 0.5,
-		    "y": 0.5,
+		    "x": 0.4,
+		    "y": 0.25,
 		    "width": 10,
-		    "height": 1,
+		    "height": 0.7,
 		    "content": []
 		},
 		{
@@ -119,7 +126,7 @@
 		    "cell_instance_id": -1,
 		    "cell_class": "cell_subtitle",  
 		    "x": 1,
-		    "y": 1.5,
+		    "y": 0.8,
 		    "width": 9,
 		    "height": 1,
 		    "content": []
@@ -128,7 +135,7 @@
 		    "cell_name": "figure_legend_title",
 		    "cell_instance_id": -1,
 		    "cell_class": "cell_fig_title",  
-		    "x": 0.75,
+		    "x": 0.5,
 		    "y": 2.75,
 		    "width": 3,
 		    "height": 0.75,
@@ -138,7 +145,7 @@
 		    "cell_name": "figure_legend",
 		    "cell_instance_id": -1,
 		    "cell_class": "cell_body",  
-		    "x": 0.75,
+		    "x": 0.5,
 		    "y": 3.5,
 		    "width": 3,
 		    "height": 4,
@@ -150,8 +157,8 @@
 		    "cell_class": "cell_image",  
 		    "x": 3.5,
 		    "y": 1.75,
-		    "width": 6,
-		    "height": 6,
+		    "width": 7,
+		    "height": 6.75,
 		    "content": []
 		}
 	    ]

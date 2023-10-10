@@ -1,12 +1,39 @@
 {
-    "title" : "Test Report Version 0.1!",
-    "subtitle" : "This is a sample sub-title for \"testing purposes\" & rendering",
-    "authors" : ["Karl Schmidt <kfschmidt@gmail.com>", "Harrison Schmidt"],
-    "pages" : [
-	{"page_template" : "titlepage",
-	 "title" : "The actual display title",
-	 "subtitle" : "Here's some subtitle text with <b>markup</b>",
-	 "logo" : "tdir/BlueRock-Logo-Full-Color-Final-2.svg"}
-	]
-
+  "title": "AuxDOC Demonstration",
+  "subtitle": "A sample auxdoc document",
+  "authors": "The Usual Suspects",
+    "logo": "./auxdoc_testdoc/contents/auxdoc_logo.png",
+  "pages": [
+    {
+      "page_template_name": "titlepage",
+      "title": "AuxDOC Demonstration",
+      "subtitle": "A sample auxdoc report",
+      "authors": "The Usual Suspects"
+    },
+    {
+      "page_template_name": "oneup",
+      "title": "Static Image Test",
+      "header": "-This is a left aligned header=",
+      "subtitle": "This image is fit within the display frame",
+      "fig1": "./auxdoc_testdoc/contents/IMG_0554.jpg",
+      "figure_legend_title": "An image of two dogs",
+      "figure_legend": "This is the legend body text. It should be in the same font and format as the body text"
+    },
+    {
+      "page_template_name": "oneup",
+	"title": "Animation (Stack) Test",
+      "header": "[Page Header]",
+      "subtitle": "Animation of the ImageJ MRI stack",
+      "fig1": "./auxdoc_testdoc/contents/mristack/*.png",
+      "figure_legend_title": "A 26 image MRI stack",
+      "figure_legend": "This should be an animation with user controls visible on hover, on the bottom."
+    },      
+    {
+      "page_template_name": "text3col",
+      "header": "Page header",
+      "title": "Three Col Test",
+      "subtitle": "Lorem ipsum test should spill out of col1",
+      "col1": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vitae nibh nec urna tempus dictum a vel libero. Curabitur elementum nulla facilisis felis sollicitudin, in egestas erat ornare. Suspendisse potenti. Vestibulum eu volutpat ante. Cras id tincidunt est. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Quisque euismod lorem a urna rutrum volutpat. Pellentesque id arcu faucibus, congue eros non, posuere odio. Pellentesque nunc lectus, vulputate in neque et, ultrices scelerisque nisi. Donec tempus a nunc eget vestibulum. Nam ante velit, semper nec tristique sed, commodo non felis. Integer risus quam, dictum egestas ullamcorper a, sollicitudin eget odio. Phasellus bibendum erat quam, at aliquam est lobortis non.\n\nNullam a mauris accumsan, auctor lectus id, imperdiet diam. In tempus est in eros aliquet, et commodo diam consectetur. Aenean id pulvinar ante. Quisque ornare facilisis risus, id dapibus odio laoreet at. Fusce iaculis in massa eu ultricies. Morbi egestas facilisis sodales. Cras fringilla mi justo.\n\nIn lobortis molestie gravida. Donec vulputate nec urna at semper. Suspendisse condimentum accumsan purus, non consectetur nulla dictum at. Nam dictum augue non arcu pharetra egestas. Sed ut suscipit dui. Mauris varius ullamcorper erat. In commodo dignissim posuere. Nam mollis felis a vestibulum sollicitudin. Cras pellentesque tempus nibh vel pellentesque. Nam et lorem metus. Mauris sit amet justo nec metus ullamcorper euismod id et purus. Maecenas pulvinar velit purus, ut dignissim mi semper eget. In suscipit risus id augue accumsan, a volutpat quam iaculis. Pellentesque risus augue, laoreet quis ornare sed, pellentesque vitae tortor. Nulla facilisis condimentum turpis eu aliquam. Praesent hendrerit libero vel est lacinia aliquet.\n\nProin ante velit, elementum sed lacus vitae, blandit maximus velit. Suspendisse diam dolor, gravida vel congue eu, mattis eget lorem. Sed vitae iaculis justo. Vestibulum venenatis tellus et nisl condimentum ornare. Phasellus vestibulum et leo eu porttitor. Nulla libero mi, mattis vel enim in, ultrices venenatis neque. Curabitur venenatis tempus sem. Proin a faucibus est. Maecenas elementum dictum augue.\n\nPraesent tristique ex elit, eu lobortis enim commodo finibus. Sed scelerisque mollis consequat. Fusce sapien eros, pharetra ut consequat a, porta quis nisi. Phasellus metus orci, sodales sit amet luctus vitae, mattis et sapien. Suspendisse at augue consequat, fermentum metus non, hendrerit enim. Morbi pellentesque ligula diam, quis interdum enim ornare nec. Donec magna est, finibus et ipsum nec, ullamcorper ultrices nisl. Sed suscipit quis quam vitae posuere. Integer quam magna, tincidunt nec purus id, lacinia dignissim felis."
+    }
+  ]
 }

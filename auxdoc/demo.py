@@ -1,4 +1,5 @@
 import os
+import shutil
 import pkgutil
 import logging
 from auxdoc.classes import AUXDoc, Page, Layout, Cell
@@ -7,31 +8,34 @@ from auxdoc.html_writer import renderDoc as renderHTML
 
 DEFAULT_OUTDIR = "./auxdoc_testdoc"
 CONTENTSDIR = "contents"
-IMGFILES = ["IMG_0554.jpg", "IMG_0693.jpg", "IMG_1665.jpg", "dog_logo.png", "blood-test.svg"]
-MOVFILES = ["IMG_6379.MOV"]
-
+IMGFILES = ["IMG_0554.jpg", "IMG_0693.jpg", "IMG_1665.jpg", "dog_logo.png", "blood-test.svg", "IMG_6379.MOV", "mristack.zip"]
+JSONFILE = "demo_doc.json"
     
 def copyResourceFile(resource_file_name, to_dir):
         data = pkgutil.get_data(__package__, "media/"+resource_file_name)
-        ofile = open(to_dir + "/" + resource_file_name, 'wb')
+        ofile_name = to_dir + "/" + resource_file_name
+        ofile = open(ofile_name, 'wb')
         ofile.write(data)
         ofile.close()
+        fname, ext = os.path.splitext(ofile_name)
+        if ext == ".zip":
+                shutil.unpack_archive(ofile_name, to_dir) 
 
 def copyResourceFiles(to_dir = DEFAULT_OUTDIR):
     contents_dir = to_dir +"/"+CONTENTSDIR
-    
+
     if not os.path.exists(contents_dir):
         os.makedirs(contents_dir)
 
     for f in IMGFILES:
         copyResourceFile(f, contents_dir)
+
+    copyResourceFile(JSONFILE, contents_dir)
     
 
-def runDemo(to_dir = DEFAULT_OUTDIR):
-    # copy the resource files
-    copyResourceFiles()
-            
-    adoc = AUXDoc()
+        
+def buildDoc(adoc):
+    
     pg = adoc.addPage("titlepage")    
     adoc.setTitle("For the Love of Dogs")
     adoc.setSubTitle("A sample auxdoc report")
@@ -53,8 +57,17 @@ def runDemo(to_dir = DEFAULT_OUTDIR):
     adoc.setPageContent(3, "subtitle", "Lorem ipsum test should spill out of col1")
     adoc.setPageContent(3, "col1", LIPSUM_LONG)
 
-    jstr = adoc.getContentJSON()
-    logging.info("Content JSON of the doc is: "+jstr)
+    return adoc
+        
+
+def runDemo(to_dir = DEFAULT_OUTDIR):
+    # copy the resource files
+    copyResourceFiles()
+            
+    adoc = AUXDoc()
+    #adoc = buildDoc(adoc)
+    demo_json = DEFAULT_OUTDIR + '/' + CONTENTSDIR +'/demo_doc.json'
+    adoc.loadContent(demo_json)
 
     # write the HTML file
     renderHTML(adoc, DEFAULT_OUTDIR, "auxdoc_report", show_layout = True)

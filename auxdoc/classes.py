@@ -26,7 +26,6 @@ A Cell is an object containing layout information for rendering on the page as w
 content to be rendered
 '''
 class Cell:
-    CELLTYPE_ANIMATION = "celltype_animation"
     CELLTYPE_IMAGE = "celltype_image"
     CELLTYPE_TEXT = "celltype_text"
     CELLTYPE_RECT = "celltype_rect"
@@ -113,7 +112,7 @@ class Page:
         try:
             retcell = self.cells[cell_name]
         except:
-            logger.info("Cell "+cell_name+" not found for page: "+str(self))
+            logging.info("Cell "+cell_name+" not found for page: "+str(self))
         return retcell
     
     def mergeContent(self, doc_page):
@@ -162,7 +161,7 @@ class Layout:
         logging.debug("... layout check was successful")
 
     def pageHasCell(self, template_name, cell_name):
-        print("page_templates is:"+str(self.page_templates))
+        #print("page_templates is:"+str(self.page_templates))
         retval = False
         try:
             template = self.page_templates[template_name]
@@ -232,23 +231,43 @@ class AUXDoc:
         if os.path.isfile(doc_file):
             dfile = doc_file
             self.docdir = os.path.dirname(doc_file)            
-        elif doc_file == SAMPLE_AUXDOC:
-            dfile = pkg_resources.resource_filename("auxdoc", LAYOUT_DIR + "/" + SAMPLE_AUXDOC)
-            self.docdir = os.getcwd()         
         else:
             raise Exception("Auxdoc file not found: "+doc_file)
         self.doc_file = dfile
-        self.doc_contents = json.loads(open(dfile, 'r').read())
-        self.title = self.doc_json['title']
-        self.subtitle = self.doc_json['subtitle']
-        self.authors = self.doc_json['authors']
+        self.doc_json = json.loads(open(dfile, 'r').read())
+
+        # parse the document json
+        if "title" in self.doc_json:
+             self.setTitle(self.doc_json['title'])
+
+        if "logo" in self.doc_json:
+             self.setLogo(self.doc_json['logo'])
+
+        if "subtitle" in self.doc_json:
+            self.setSubTitle(self.doc_json['subtitle'])
+
+        if "authors" in self.doc_json:
+            self.setAuthors(self.doc_json['authors'])
+
+        # parse each page
+        pagenum = 0
+        if "pages" in self.doc_json:
+            for p in self.doc_json['pages']:
+                self.addPage(p['page_template_name'])
+                pagenum += 1
+                for c in p:
+                    if c != 'page_template_name':
+                        self.setPageContent(pagenum, c, p[c])
 
     def setTitle(self, title):
         logging.debug("setTitle("+title+")")
         self.title = title
         if len(self.pages) > 0:
             self.pages[0].page_contents['title'] = title
-            
+                        
+    def setLogo(self, logo):
+        logging.debug("setLogo("+logo+")")
+        self.logo = logo
             
     def setSubTitle(self, subtitle):
         logging.debug("setSubTitle("+subtitle+")")        
@@ -269,7 +288,7 @@ class AUXDoc:
         pg.page_no = len(self.pages) +1
         pg.page_contents['page_template_name'] = page_template
         self.pages.append(pg)
-        print("pg is: "+str(pg))        
+        #print("pg is: "+str(pg))        
         return pg
 
     def setPageContent(self, page_no, cell_name, cell_content):

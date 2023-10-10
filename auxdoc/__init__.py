@@ -17,7 +17,6 @@ from .demo import runDemo
 from .demo import copyResourceFile
 from .demo import copyResourceFiles
 from .html_writer import renderDoc as renderHTML
-from .html_writer import getCellAsSVG
-from .html_writer import getPageAsSVG
+
 
 

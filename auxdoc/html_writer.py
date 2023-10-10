@@ -3,19 +3,27 @@ import logging
 from .literals import *
 from .classes import *
 import traceback
+import glob
 
 SHOW_LAYOUT = True
 PAGE_SUBDIR = "page_files"
 
+DOC_HEAD = ''
+DOC_SCRIPT = ''
+DOC_BODY = ''
+
+INDT = '   ';
 
 def renderDoc(udoc, outdir, fileprefix, show_layout = False):
-    logging.info("rendering to HTML: "+str(udoc) + " to directory: "+outdir)
+    '''
+    Renders a valid document to a set of html files in slide format.
+    Each page is rendered as a separate, standalone html file located in
+    directory outdir/reportpageX.html
 
-    # vars
-    global SHOW_LAYOUT
-    global PAGE_SUBDIR
-    
-    # check that the directory exists
+    '''
+    logging.info("rendering to HTML: "+str(udoc.title) + " to directory: "+outdir)
+
+    # check that the directory exists, create if not
     page_outdir = outdir + '/' + PAGE_SUBDIR
     if not os.path.exists(page_outdir):
         logging.debug("Creating directory: "+page_outdir)
@@ -25,135 +33,127 @@ def renderDoc(udoc, outdir, fileprefix, show_layout = False):
     for p in udoc.pages:
         ofile_div = page_outdir + "/" + fileprefix + "_p" + str(p.page_no) + ".html"
         logging.debug("rendering page: "+str(p.page_no) + " to file: "+ofile_div)
-        divstr = getPageAsDIV(p)
+        headstr, divstr = getPageAsDIV(p)
+        html = wrapHeadAndBody(headstr, divstr)
         fid = open(ofile_div, 'w')
-        fid.write(divstr)
+        fid.write(html)
         fid.close()        
 
-    # create the navigation page
-    headstr = getMainHead(udoc, fileprefix)
-    bodystr = getMainBody(udoc, fileprefix)
-    html_str = '<HTML>\n' + headstr + bodystr + '</HTML>\n'
-    ofile_html = outdir + "/" + fileprefix + ".html"
-    if not os.path.exists(outdir):
-        os.makedirs(outdir)    
-    logging.debug("writing html navigation file: "+ofile_html)
-    fid = open(ofile_html, 'w')
-    fid.write(html_str)
-    fid.close()        
-
-def getMainBody(udoc, fileprefix):
-    open_body = "  <BODY>\n"
-    close_body = "  </BODY>\n"
-    body = '<div id="contentdiv" tabindex=0 style="bakground: red; width=400; height=500">\n' + \
-        '</div>'
+def wrapHeadAndBody(head, body):
+    ret = '<HTML>\n'
+    ret = '<HEAD>\n'    
+    ret += head
+    ret += '</HEAD>\n'
+    ret += '<BODY>\n'
+    ret += body
+    ret += '</BODY>\n'
+    ret += '</HTML>\n'
+    return ret
     
-    bodystr = open_body + body + close_body
-    return bodystr
-    
-def getMainHead(udoc, fileprefix):
-    incl_jquery = '  <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>\n'    
-
-    fxn_vars = '\n  let curpage = 0\n' + \
-        '  let maxpage='+str(len(udoc.pages))+'\n' + \
-        '  let file_prefix="' + PAGE_SUBDIR + '/' + fileprefix + '_p"\n\n'
-
-    fxn_onload = \
-    '''
-      $( document ).ready(function() {
-           $("#contentdiv").load(file_prefix + "1.html");
-           document.addEventListener("keydown", pageCycle, true);
-           document.getElementById("contentdiv").addEventListener("keydown", pageCycle, true);    
-      });       
-    '''
-    
-    fxn_pagecycle = \
-    '''
-    function pageCycle(e) {
-      if (e.keyCode === 37) {
-          // left arrow key is pressed    
-          if (curpage === 0) {
-          curpage = maxpage - 1
-          } else {
-             curpage = (curpage - 1) % maxpage
-          }
-    
-        } else if (e.keyCode === 39) {
-          // Right arrow key is pressed
-          button = "right"
-          curpage = (curpage + 1) % maxpage
-        }
-      newfile = file_prefix + (curpage+1) + ".html"
-      alert("event captured: "+e + " file is: "+newfile)              
-      $("#contentdiv").load(newfile);    
-    }
-    
-
-    '''
-
-    headstr = '<HEAD>\n'
-    headstr += incl_jquery    
-    headstr += '  <SCRIPT>\n'
-    headstr += fxn_vars
-    headstr += fxn_onload
-    headstr += fxn_pagecycle
-    headstr += '   </SCRIPT>\n'
-    headstr += '</HEAD>\n'        
-    return headstr
-    
-    
-
 def getPageAsDIV(page):
+    
     '''Returns this page as a single div according to the layout and cell contents'''
     w = convertToPts(page.width, page.units)
     h = convertToPts(page.height, page.units)
+    head = ''
+    body = ''
+    
+    # setup the head entries
+    incl_goog_icon = INDT+'<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">\n'
 
-    div_border = ''
+    incl_jquery = INDT+'<script src="http://code.jquery.com/jquery.min.js"></script>\n'
 
+    # add the fonts
+    fnts = ''
+    for f in page.fonts:
+        fnts += INDT+page.fonts[f] +';\n'
+
+    
+    # add the cell class style elements 
+    cell_styles = '';
+    for c in page.cell_classes:
+        if page.cell_classes[c]['cell_type'] == Cell.CELLTYPE_TEXT:
+            cell_styles += INDT+'.'+ c + ' ' + page.cell_classes[c]['style'] + '\n'
+
+    # default div style and border if nec.        
+    div_style = INDT + 'div { \n    position: absolute;\n'
     if SHOW_LAYOUT:
-        div_border = 'style="border:1px solid red" '
-        
+        div_style += INDT + 'border: 1px solid red;\n'
+
+    div_style += INDT + '}\n'
+
+            
+    # add the anim button style
+    button_style = '\n'+INDT + 'button {\n' + \
+                   INDT + INDT + 'border: none;\n' + \
+                   INDT + INDT + 'margin-left: 10px;\n' + \
+                   INDT + INDT + 'background-color: transparent;\n' + \
+                   INDT + '}\n'+ \
+                   INDT + '.material-icons {\n'+ \
+                   INDT + INDT+'color:rgba(125,125,125,0.5);\n'+ \
+                   INDT + INDT+'font-size: 18px;\n'+ \
+                   INDT + '}\n'
+
+    button_style += INDT + 'button:hover {\n' + \
+                   INDT + INDT + 'background-color: rgba(255,255,255,0.3);\n' + \
+                   INDT + '}\n'
+    
+    button_style += INDT + 'button:hover .material-icons{\n' + \
+                   INDT + INDT + 'color: red;\n'+ \
+                   INDT + '}\n'                   
+    
+
+    # add the navigation event listeners
+    page_nav_script = \
+        '''
+        function keyPressed(e) {
+              if (e.keyCode === 37) {
+                 // left arrow key is pressed
+                 console.log("left arrow pressed");
+              } else if (e.keyCode === 39) {
+                 // right arrow key is pressed
+                 console.log("right arrow pressed");        
+             }
+         }
+
+         document.addEventListener("keydown", keyPressed, true);
+                
+        '''
+
+
+
+
+
+    
+    head = incl_jquery + incl_goog_icon + \
+        '<STYLE>\n' + fnts + div_style + cell_styles + button_style + '</STYLE>\n' + \
+        '<SCRIPT>\n' + page_nav_script + '</SCRIPT>\n'
+
+    
+    # build the html
+    
     div_open = '<div '+ \
         'width="'+ str(w)+'px" '+ \
-        'height="'+str(h)+ 'px" '+ \
-        div_border + '>\n'
+        'height="'+str(h)+ 'px" >\n'
     
     div_close = '</div>\n'
 
-    div_style = '<style>\n'
-    fnt = ""
-    for f in page.fonts:
-        div_style += '    '+page.fonts[f] +';\n'
-
-    if SHOW_LAYOUT:
-        div_style += '    div { border: 1px solid #0000FF; }\n'
-
-
-    for c in page.cell_classes:
-        if page.cell_classes[c]['cell_type'] == Cell.CELLTYPE_TEXT:
-            div_style += '    .'+ c + ' ' + page.cell_classes[c]['style'] + '\n'
-
-    div_style += '   div { position: absolute; }\n'
-    div_style += '</style>\n'
-        
     div_body = ""
-    div_cells = ""
-    print("page.page_contents is: "+str(page.page_contents))
+
+    #print("page.page_contents is: "+str(page.page_contents))    
     for cname in page.cells.keys():
         content = ""
         try:
             content = page.page_contents[cname]
             try:
-                body = getCellAsDIV(page.cells[cname], content, page.units)        
-                div_body += body
+                div_body += getCellAsDIV(page.cells[cname], content, page.units)        
             except:
                 traceback.print_exc()
         except:
             logging.debug("No content found for cell: "+cname+" ...skipping.")
         
-            
-    div = div_style + div_open + div_body + div_close                    
-    return div
+    body = div_open + div_body + div_close 
+    return head, body
 
 
 
@@ -190,41 +190,201 @@ def getRectCellAsDIV(cell_coords, content, class_name):
 
 
 def getImageCellAsDIV(cell_coords, content, class_name):
+
+    # switch based on media type: static image, movie, img sequence
+    fname, ext = os.path.splitext(content)    
+    is_sequence = False
+    is_movie = False
+    if '*' in content:
+        is_sequence = True        
+    elif ext in ['.mov', '.mp4']:
+        is_movie = True
+
+    if is_sequence:
+        div = getAnimationImageDIV(cell_coords, content, class_name)
+    else:        
+        div = getStaticImageDIV(cell_coords, content, class_name)
+
+    return div
+
+def getImageElement(cell_coords, image_src, img_id):
     x, y, w, h = cell_coords
-    div = ""
-    src = content
+    ret = ''    
+    src = image_src
     fname, ext = os.path.splitext(src)
 
-    # check that the src exists
-    if not os.path.exists(src):
-        raise Exception("The image file: "+src+" was not found")
+    srcb64 = getAsBase64Src(src)
     
-    if ext.lower() == ".svg" and False:  # disable inline svg and treat all svg as images 
-        sourcesvg = open(src).read()
-        if '?>' in sourcesvg:
-            namespace_idx = sourcesvg.index('?>')
-            sourcesvg = sourcesvg[(namespace_idx+2):]
-        div = '<div x="' + str(x) + 'px" y="' + str(y) + 'px" ' 
-        div += 'width="' + str(w) + 'px" height="' + str(h) + 'px" >\n'
-        div += sourcesvg
-        div += '\n</div>\n'
+    ret += '    <image id="'+img_id+'" style="object-fit: contain;" width="' + str(w) + '" height="' + str(h) + \
+        '" src="' + srcb64 +'" />\n'
+    return ret
+
+def getAsBase64Src(src_file):
+    # check that the src exists
+    fname, ext = os.path.splitext(src_file)    
+    if not os.path.exists(src_file):
+        raise Exception("The image file: "+src_file+" was not found")
+    print("about to encode src file: "+src_file)
+    ftype = ext.lower()[1:]
+    if ftype == 'svg':
+        ftype = 'svg+xml'    
+    b64_bytes = base64.b64encode(open(src_file, 'rb').read())
+    b64 = b64_bytes.decode('ascii')
+    src_str = 'data:image/' + ftype +';base64,'+b64
+    return src_str
+
+
+def getAnimationImageDIV(cell_coords, content, class_name):
+    '''Returns the html for an animation of the images (all embedded)
+    including controls, embedded in a single div mapped to the cell coords
+    images are displayed in natural order based on directory listing.
+    '''
+    x, y, w, h = cell_coords
+    div = ''
+    fname, ext = os.path.splitext(content)
+
+    # get the image files and encode them
+    files = glob.glob(content)
+    images_src = []
+    
+    # load and base64 encode the images, store the src strings
+    if len(files) == 0:
+        raise Exception("Image files were not found: "+content)
     else:
-        print("about to encode src file: "+src)
-        ftype = ext.lower()[1:]
-        if ftype == 'svg':
-            ftype = 'svg+xml'
-        b64_bytes = base64.b64encode(open(src, 'rb').read())
-        b64 = b64_bytes.decode('ascii')
+        for f in files:
+            srcb64 = getAsBase64Src(f)
+            images_src.append(srcb64)
 
-        div = '    <div class="'+ class_name +'" '
-        div += getPosStyle(x, y, w, h)
-        div += '>\n'
-        div += '    <image width="' + str(w) + '" height="' + str(h) + \
-            '" src="data:image/' + ftype + ';base64,' + b64 +'" />\n'
-        div += '    </div>\n'
+    # make the image tag
+    img_html_id = 'anim'+str(x)+str(y)
+    img_html = '    <image id="'+img_html_id + '" ' + \
+        'style="object-fit: contain;" ' + \
+        'width="' + str(w) + '" height="' + str(h) + '" ' + \
+        'src="'+images_src[0]+'" />\n'    
 
+    # make the control html
+    ctl_html = getAnimControlHTML()
+    
+    # make the javascript
+    js = getAnimControlJS(img_html_id, images_src)
+    
+    div = '    <div class="'+ class_name +'" '
+    div += getPosStyle(x, y, w, h)
+    div += '>\n'
+    div += img_html
+    div += ctl_html
+    div += js        
+    div += '    </div>\n'
+    return div
 
+def getAnimControlHTML():
+    icon_play = '<i class="material-icons" onclick="startLoop()">play</button></i>\n'
+    icon_pause = '<i class="material-icons" onclick="stopLoop()">pause</button></i>\n'
+    
+    button_back = INDT+'<button ><i class="material-icons" onclick="decrementImage()">chevron_left</button></i>\n'
+    button_fwd = INDT+'<button ><i class="material-icons" onclick="incrementImage()">chevron_right</button></i>\n'
+    button_ffwd = INDT+'<button ><i class="material-icons" onclick="speedUp()">add_circle_outline</button></i>\n'
+    button_rwd = INDT+'<button ><i class="material-icons" onclick="slowDown()">remove_circle_outline</button></i>\n'
+    button_pause = INDT+'<button id="playpause">'+icon_pause+'</button></i>\n'
+    button_close = '</i></button>\n'
+    html = INDT + '<div id="animctl" style="z-index: 10; position:absolute; bottom: 10; width: 50%; left: 24%; text-align:center; column-gap: 20px;">'
+    html += button_rwd + button_back + button_pause + button_fwd + button_ffwd
+    html += INDT + '</div>\n'
+    
+    return html
 
+def getAnimControlJS(img_tag_id, images_src):
+
+    images_arr = '   let images_src = [\n'
+    imgcount = 0
+    for i in images_src:
+        if imgcount > 0:
+            images_arr += ', \n'
+        images_arr += '      "'+i+'"'
+        imgcount += 1
+    images_arr += '\n     ];\n'
+
+    fxn_refreshImage = '    function refreshImage() {\n ' + \
+        '        document.getElementById("' + img_tag_id + '").src = images_src[localImageIDX];\n' + \
+        '        //console.log("image_el.src updated to idx: "+localImageIDX);\n    }\n'
+
+    fxn_showPlayPause  = INDT + ' let play_icon = "<i class=\\"material-icons\\" onclick=\\"startLoop()\\">play_arrow</button></i>\"\n'
+    fxn_showPlayPause += INDT + ' let pause_icon = "<i class=\\"material-icons\\" onclick=\\"stopLoop()\\">pause</button></i\>"\n'
+    fxn_showPlayPause += INDT + ' function showPlayIcon() {\n' + \
+        INDT + INDT + 'document.getElementById("playpause").innerHTML = play_icon;\n' + \
+        INDT + '}\n'
+    fxn_showPlayPause += INDT + ' function showPauseIcon() {\n' + \
+        INDT + INDT + 'document.getElementById("playpause").innerHTML = pause_icon;\n' + \
+        INDT + '}\n'
+        
+    script = \
+        '''
+          let localImageIDX = 0;
+          let numimgs = images_src.length;
+          let playon = 1;
+          let framedelay = 500;
+          let timerid = -1;
+        
+          function animinit() {
+              console.log("document initialized and numimgs is "+numimgs);
+              refreshImage();
+              startLoop();
+          }
+
+          function startLoop() {
+              timerid = setInterval(incrementImage, framedelay);
+              showPauseIcon();
+          }
+
+        
+          function stopLoop() {
+             clearInterval(timerid);
+             showPlayIcon();
+          }
+
+         function speedUp() {
+           framedelay = framedelay - 100;
+           stopLoop();
+           startLoop();
+         }
+
+         function slowDown() {
+           framedelay = framedelay + 100;
+           stopLoop();
+           startLoop();
+         }        
+        
+           function incrementImage() {
+               localImageIDX = (localImageIDX+1) % numimgs;
+               // console.log("incrementImage() called and localImageIDX is "+localImageIDX);
+               refreshImage();
+           }
+        
+           function decrementImage() {
+               if (localImageIDX <= 0) {
+                  localImageIDX = numimgs - 1;
+               } else {
+                  localImageIDX = localImageIDX - 1;
+               }
+               // console.log("decrementImage() called and localImageIDX is "+localImageIDX);
+               refreshImage();
+            }
+
+        '''
+
+    
+    html = '<SCRIPT>\n' + images_arr + script + fxn_refreshImage + fxn_showPlayPause + '\n    animinit();\n</SCRIPT>\n'
+    return html
+    
+
+def getStaticImageDIV(cell_coords, content, class_name):
+    x, y, w, h = cell_coords
+    img_el = getImageElement(cell_coords, content, "I1")
+    div = '    <div class="'+ class_name +'" '
+    div += getPosStyle(x, y, w, h)
+    div += '>\n'
+    div += img_el
+    div += '    </div>\n'
     return div
 
 
@@ -245,7 +405,6 @@ def getCellAsDIV(cell, content, units):
 
     return (div+'\n')
 
-
     
 def getCellCoords(cell, units):
     w = convertToPts(cell.width, units)
@@ -264,139 +423,6 @@ def convertToPts(val, units):
     elif units == UNIT_CM:
         pts = val * PT_PER_IN / CM_PER_IN
     return pts
-
-
-
-
-
-
-# SVG generation methods
-# DEPRECATED
-
-def getPageAsSVG(page):
-    '''Returns this page as a single svg image according to the layout and cell contents'''
-    w = convertToPts(page.width, page.units)
-    h = convertToPts(page.height, page.units)
-
-    svg_border = ""
-
-    if SHOW_LAYOUT:
-        svg_border = 'style="border:1px solid red" '
-        
-    svg_open = '<svg '+ \
-        'width="'+ str(w)+'px" '+ \
-            'height="'+str(h)+ 'px" '+ \
-            svg_border + \
-            'xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">\n'
-    svg_close = '</svg>\n'
-
-    svg_style = '<style>\n'
-    fnt = ""
-    for f in page.fonts:
-        svg_style += '    '+page.fonts[f] +';\n'
-
-    if SHOW_LAYOUT:
-        svg_style += '    div { border: 1px solid #0000FF; }\n'
-
-
-    for c in page.cell_classes:
-        if page.cell_classes[c]['cell_type'] == Cell.CELLTYPE_TEXT:
-            svg_style += '    .'+ c + ' ' + page.cell_classes[c]['style'] + '\n'
-    svg_style += '</style>\n'
-        
-    svg_body = ""
-    svg_cells = ""
-    print("page.page_contents is: "+str(page.page_contents))
-    for cname in page.cells.keys():
-        content = ""
-        try:
-            content = page.page_contents[cname]
-            try:
-                body = getCellAsSVG(page.cells[cname], content, page.units)        
-                svg_body += body
-            except:
-                traceback.print_exc()
-        except:
-            logging.debug("No content found for cell: "+cname+" ...skipping.")
-        
-            
-    svg = svg_open + svg_style + svg_body + svg_close                    
-    return svg
-
-
-
-def getTextCellAsSVG(cell_coords, content, class_name):
-    x, y, w, h = cell_coords
-    divclass = class_name
-
-    fo_open = '<foreignObject '+ \
-        'x="' + str(x) + 'px" y="' + str(y) + 'px" ' + \
-        'width="' + str(w) + 'px" height="' + str(h) + 'px" >\n'        
-    div_open = '     <div class="' + divclass + '" xmlns="http://www.w3.org/1999/xhtml">\n'
-    div_close = '\n     </div>\n'
-    fo_close = '</foreignObject>\n'
-    svg = fo_open + div_open + content + div_close + fo_close    
-    return svg
-
-def getRectCellAsSVG(cell_coords, content, class_name):
-    x, y, w, h = cell_coords
-
-    svg = '<rect x="' + str(x) + 'px" y="' + str(y) + 'px" ' + \
-	'width="' + str(w) + 'px" height="' + str(h) +'px" ' + \
-	'style="fill:' + str(bg_color) + ';stroke:blue;stroke-width:5;' + \
-	'fill-opacity:' + str(bg_alpha) + ';stroke-opacity:0.9" />\n'
-        
-    return svg
-    
-def getImageCellAsSVG(cell_coords, content, class_name):
-    x, y, w, h = cell_coords
-    svg = ""
-    src = content
-    fname, ext = os.path.splitext(src)
-
-    # check that the src exists
-    if not os.path.exists(src):
-        raise Exception("The image file: "+src+" was not found")
-    
-    if ext.lower() == ".svg":   
-        sourcesvg = open(src).read()
-        if '?>' in sourcesvg:
-            namespace_idx = sourcesvg.index('?>')
-            sourcesvg = sourcesvg[(namespace_idx+2):]
-        svg = '<image x="' + str(x) + 'px" y="' + str(y) + 'px" ' 
-        svg += 'width="' + str(w) + 'px" height="' + str(h) + 'px" >\n'
-        #svg += '<rect x="0" y="0" width="20" height="30" />\n'
-        svg += sourcesvg
-        svg += '\n</image>\n'
-    else:
-        print("about to encode src file: "+src)
-        b64_bytes = base64.b64encode(open(src, 'rb').read())
-        b64 = b64_bytes.decode('ascii')
-        svg = '<image '
-        svg += 'x="' + str(x) + 'px" y="' + str(y) + 'px" ' 
-        svg += 'width="' + str(w) + 'px" height="' + str(h) + 'px" '
-        #svg += ' xlink:href="data:image/' + ext.lower()[1:] + ';base64,' + b64 +'" />'
-        svg += ' src="data:image/' + ext.lower()[1:] + ';base64,' + b64 +'" />'
-        
-    return svg
-    
-
-def getCellAsSVG(cell, content, units):
-    coords = getCellCoords(cell, units)
-    cell_class = cell.cell_class
-    
-    svg = ""
-
-    if cell.cell_type == Cell.CELLTYPE_TEXT:
-        svg = getTextCellAsSVG(coords, content, cell_class)
-    elif cell.cell_type == Cell.CELLTYPE_IMAGE:
-        svg = getImageCellAsSVG(coords, content, cell_class)        
-    elif cell.cell_type == Cell.CELLTYPE_RECT:
-        svg = getRectCellAsSVG(coords, content, cell_class)        
-    else:
-        raise Exception("Unhandled cell type: "+cell_type)                
-
-    return svg
 
 
 
