@@ -31,9 +31,19 @@ def renderDoc(udoc, outdir, fileprefix, show_layout = False):
     
     # render each page
     for p in udoc.pages:
-        ofile_div = page_outdir + "/" + fileprefix + "_p" + str(p.page_no) + ".html"
-        logging.debug("rendering page: "+str(p.page_no) + " to file: "+ofile_div)
-        headstr, divstr = getPageAsDIV(p)
+        thispage = p.page_no
+        nextpage = thispage+1
+        prevpage = thispage-1
+        if prevpage < 1:
+            prevpage = len(udoc.pages)
+        if nextpage > len(udoc.pages):
+            nextpage = 1
+        ofile_div = page_outdir + "/" + fileprefix + "_p" + str(thispage) + ".html"
+        url_prev_page = "./" + fileprefix + "_p" + str(prevpage) + ".html"
+        url_next_page = "./" + fileprefix + "_p" + str(nextpage) + ".html"
+
+        logging.debug("rendering page: "+str(p.page_no) + " to file: "+ofile_div)        
+        headstr, divstr = getPageAsDIV(p, url_prev_page, url_next_page)
         html = wrapHeadAndBody(headstr, divstr)
         fid = open(ofile_div, 'w')
         fid.write(html)
@@ -50,7 +60,7 @@ def wrapHeadAndBody(head, body):
     ret += '</HTML>\n'
     return ret
     
-def getPageAsDIV(page):
+def getPageAsDIV(page, url_prev_page, url_next_page):
     
     '''Returns this page as a single div according to the layout and cell contents'''
     w = convertToPts(page.width, page.units)
@@ -104,15 +114,23 @@ def getPageAsDIV(page):
     
 
     # add the navigation event listeners
+    page_nav_vars = INDT + 'let url_prev_page="'+url_prev_page+'";\n' + \
+        INDT + 'let url_next_page="'+url_next_page+'";\n\n'
     page_nav_script = \
         '''
         function keyPressed(e) {
               if (e.keyCode === 37) {
                  // left arrow key is pressed
                  console.log("left arrow pressed");
+                 window.location.href = url_prev_page;
               } else if (e.keyCode === 39) {
                  // right arrow key is pressed
-                 console.log("right arrow pressed");        
+                 console.log("right arrow pressed");
+                 window.location.href = url_next_page;
+              } else if (e.keyCode === 32) {
+                 // spacebar is pressed
+                 console.log("spacebar pressed");
+                 window.location.href = url_next_page;        
              }
          }
 
@@ -127,7 +145,7 @@ def getPageAsDIV(page):
     
     head = incl_jquery + incl_goog_icon + \
         '<STYLE>\n' + fnts + div_style + cell_styles + button_style + '</STYLE>\n' + \
-        '<SCRIPT>\n' + page_nav_script + '</SCRIPT>\n'
+        '<SCRIPT>\n' + page_nav_vars + page_nav_script + '</SCRIPT>\n'
 
     
     # build the html
